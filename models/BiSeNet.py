@@ -56,14 +56,14 @@ def FeatureFusionModule(input_1, input_2, n_filters):
 
     net = tf.add(inputs, net)
 
-    return net
+    return net  
 
 
 def build_bisenet(inputs, num_classes, preset_model='BiSeNet', frontend="ResNet101", weight_decay=1e-5, is_training=True, pretrained_dir="models"):
     """
     Builds the BiSeNet model. 
 
-    Arguments:
+    Arguments: 
       inputs: The input tensor=
       preset_model: Which model you want to use. Select which ResNet model to use for feature extraction 
       num_classes: Number of classes
