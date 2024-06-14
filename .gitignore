@@ -13,3 +13,6 @@ loss_vs_epochs.png
 colour_codes.csv
 CamVid_train.tfrecords
 tfrecords.py
+notes.txt
+StegaStampV1/
+StegaStampV1_sample/

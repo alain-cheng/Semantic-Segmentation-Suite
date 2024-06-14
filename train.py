@@ -8,6 +8,7 @@ import argparse
 import random
 import os, sys
 import subprocess
+from utils.gpu_rest import GPURest
 
 # use 'Agg' on matplotlib so that plots could be generated even without Xserver
 # running
@@ -71,6 +72,11 @@ def data_augmentation(input_image, output_image):
 
     return input_image, output_image
 
+# Declare GPU rest object || 300 seconds / 5 min timer
+gpu_rest = GPURest(300)
+
+# Learning Rate; default is 0.0001
+learning_rate = 0.001 
 
 # Get the names of the classes so we can record the evaluation results
 class_names_list, label_values = helpers.get_label_info(os.path.join(args.dataset, "class_dict.csv"))
@@ -128,6 +134,7 @@ print("Crop Width -->", args.crop_width)
 print("Num Epochs -->", args.num_epochs)
 print("Batch Size -->", args.batch_size)
 print("Num Classes -->", num_classes)
+print("Class Names: " + str(class_names_list))
 
 print("Data Augmentation:")
 print("\tVertical Flip -->", args.v_flip)
@@ -335,5 +342,5 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
 
     plt.savefig('iou_vs_epochs.png')
 
-
-
+    if epoch % 5 == 0:
+        gpu_rest.rest()
