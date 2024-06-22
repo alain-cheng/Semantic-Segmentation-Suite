@@ -4,8 +4,9 @@ import subprocess
 
 sys.path.append("models")
 from models.BiSeNet import build_bisenet
+from models.MobileUNet import build_mobile_unet
 
-SUPPORTED_MODELS = ["BiSeNet"]
+SUPPORTED_MODELS = ["BiSeNet", "MobileUNet"]
 
 SUPPORTED_FRONTENDS = ["ResNet50", "ResNet101", "ResNet152", "MobileNetV2", "InceptionV4"]
 
@@ -42,6 +43,8 @@ def build_model(model_name, net_input, num_classes, crop_width, crop_height, fro
 	if model_name == "BiSeNet":
 		# BiSeNet requires pre-trained ResNet weights
 		network, init_fn = build_bisenet(net_input, preset_model = model_name, frontend=frontend, num_classes=num_classes, is_training=is_training)
+	elif model_name == "MobileUNet" or model_name == "MobileUNet-Skip":
+		network = build_mobile_unet(net_input, preset_model = model_name, num_classes=num_classes)
 	else:
 		raise ValueError("Error: the model %d is not available. Try checking which models are available using the command python main.py --help")
 

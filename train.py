@@ -76,7 +76,8 @@ def data_augmentation(input_image, output_image):
 gpu_rest = GPURest(300)
 
 # Learning Rate; default is 0.0001
-learning_rate = 0.001 
+initial_learning_rate = 0.02
+decay_rate = 0.990
 
 # Get the names of the classes so we can record the evaluation results
 class_names_list, label_values = helpers.get_label_info(os.path.join(args.dataset, "class_dict.csv"))
@@ -102,7 +103,7 @@ network, init_fn = model_builder.build_model(model_name=args.model, frontend=arg
 
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=network, labels=net_output))
 
-opt = tf.train.RMSPropOptimizer(learning_rate=0.0001, decay=0.995).minimize(loss, var_list=[var for var in tf.trainable_variables()])
+opt = tf.train.RMSPropOptimizer(learning_rate=initial_learning_rate, decay=decay_rate).minimize(loss, var_list=[var for var in tf.trainable_variables()])
 
 saver=tf.train.Saver(max_to_keep=1000)
 sess.run(tf.global_variables_initializer())
@@ -153,7 +154,7 @@ num_vals = min(args.num_val_images, len(val_input_names))
 
 # Set random seed to make sure models are validated on the same validation images.
 # So you can compare the results of different models more intuitively.
-random.seed(16)
+#random.seed(16)
 val_indices=random.sample(range(0,len(val_input_names)),num_vals)
 
 # Do the training here
