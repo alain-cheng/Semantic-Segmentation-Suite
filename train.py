@@ -7,6 +7,9 @@ import time, datetime
 import argparse
 import random
 import os, sys
+# Uncomment when training on ccscloud
+# os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
+
 import subprocess
 from utils.gpu_rest import GPURest
 
@@ -73,7 +76,7 @@ def data_augmentation(input_image, output_image):
     return input_image, output_image
 
 # Declare GPU rest object || 300 seconds / 5 min timer
-gpu_rest = GPURest(300)
+# gpu_rest = GPURest(300)
 
 # Learning Rate; default is 0.0001
 initial_learning_rate = 0.02
@@ -116,7 +119,7 @@ if init_fn is not None:
     init_fn(sess)
 
 # Load a previous checkpoint if desired
-model_checkpoint_name = "checkpoints/latest_model_" + args.model + "_" + args.dataset + ".ckpt"
+model_checkpoint_name = args.model + "/" + "checkpoints/latest_model_" + args.model + "_" + args.dataset + ".ckpt"
 if args.continue_training:
     print('Loaded latest model checkpoint')
     saver.restore(sess, model_checkpoint_name)
@@ -214,8 +217,8 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     avg_loss_per_epoch.append(mean_loss)
 
     # Create directories if needed
-    if not os.path.isdir("%s/%04d"%("checkpoints",epoch)):
-        os.makedirs("%s/%04d"%("checkpoints",epoch))
+    if not os.path.isdir("%s/%s/%04d"%(args.model,"checkpoints",epoch)):
+        os.makedirs("%s/%s/%04d"%(args.model,"checkpoints",epoch))
 
     # Save latest checkpoint to same file name
     print("Saving latest checkpoint")
@@ -223,12 +226,12 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
 
     if val_indices != 0 and epoch % args.checkpoint_step == 0:
         print("Saving checkpoint for this epoch")
-        saver.save(sess,"%s/%04d/model.ckpt"%("checkpoints",epoch))
+        saver.save(sess,"%s/%s/%04d/model.ckpt"%(args.model,"checkpoints",epoch))
 
 
     if epoch % args.validation_step == 0:
         print("Performing validation")
-        target=open("%s/%04d/val_scores.csv"%("checkpoints",epoch),'w')
+        target=open("%s/%s/%04d/val_scores.csv"%(args.model,"checkpoints",epoch),'w')
         target.write("val_name, avg_accuracy, precision, recall, f1 score, mean iou, %s\n" % (class_names_string))
 
 
@@ -275,8 +278,8 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
 
             file_name = os.path.basename(val_input_names[ind])
             file_name = os.path.splitext(file_name)[0]
-            cv2.imwrite("%s/%04d/%s_pred.png"%("checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(out_vis_image), cv2.COLOR_RGB2BGR))
-            cv2.imwrite("%s/%04d/%s_gt.png"%("checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(gt), cv2.COLOR_RGB2BGR))
+            cv2.imwrite("%s/%s/%04d/%s_pred.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(out_vis_image), cv2.COLOR_RGB2BGR))
+            cv2.imwrite("%s/%s/%04d/%s_gt.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(gt), cv2.COLOR_RGB2BGR))
 
 
         target.close()
@@ -319,7 +322,7 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     ax1.set_ylabel("Avg. val. accuracy")
 
 
-    plt.savefig('accuracy_vs_epochs.png')
+    plt.savefig(args.model + "/" + 'accuracy_vs_epochs.png')
 
     plt.clf()
 
@@ -330,7 +333,7 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     ax2.set_xlabel("Epoch")
     ax2.set_ylabel("Current loss")
 
-    plt.savefig('loss_vs_epochs.png')
+    plt.savefig(args.model + "/" + 'loss_vs_epochs.png')
 
     plt.clf()
 
@@ -341,7 +344,4 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     ax3.set_xlabel("Epoch")
     ax3.set_ylabel("Current IoU")
 
-    plt.savefig('iou_vs_epochs.png')
-
-    if epoch % 5 == 0:
-        gpu_rest.rest()
+    plt.savefig(args.model + "/" + 'iou_vs_epochs.png')
