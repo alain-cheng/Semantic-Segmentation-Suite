@@ -7,8 +7,7 @@ import time, datetime
 import argparse
 import random
 import os, sys
-# Uncomment when training on ccscloud
-# os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
+os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
 
 import subprocess
 from utils.gpu_rest import GPURest
