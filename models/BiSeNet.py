@@ -9,14 +9,14 @@ import os, sys
 def Upsampling(inputs,scale):
     return tf.image.resize_bilinear(inputs, size=[tf.shape(inputs)[1]*scale,  tf.shape(inputs)[2]*scale])
 
-def ConvUpscaleBlock(inputs, n_filters, kernel_size=[3, 3], scale=2):
-    """
-    Basic conv transpose block for Encoder-Decoder upsampling
-    Apply successivly Transposed Convolution, BatchNormalization, ReLU nonlinearity
-    """
-    net = tf.nn.relu(slim.batch_norm(inputs, fused=True))
-    net = slim.conv2d_transpose(net, n_filters, kernel_size=[3, 3], stride=[scale, scale], activation_fn=None)
-    return net
+# def ConvUpscaleBlock(inputs, n_filters, kernel_size=[3, 3], scale=2):
+#     """
+#     Basic conv transpose block for Encoder-Decoder upsampling
+#     Apply successivly Transposed Convolution, BatchNormalization, ReLU nonlinearity
+#     """
+#     net = tf.nn.relu(slim.batch_norm(inputs, fused=True))
+#     net = slim.conv2d_transpose(net, n_filters, kernel_size=[3, 3], stride=[scale, scale], activation_fn=None)
+#     return net
 
 def ConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1):
     """
