@@ -1,5 +1,3 @@
-## TODO
-
 import os,time,cv2
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
@@ -25,15 +23,15 @@ def conv_transpose_block(inputs, n_filters, kernel_size=[3, 3]):
 	net = tf.nn.relu(slim.batch_norm(net))
 	return net
 
-def build_mobile_unet(inputs, preset_model, num_classes):
+def build_unet(inputs, preset_model, num_classes):
 
 	has_skip = False
-	if preset_model == "MobileUNet":
+	if preset_model == "UNet":
 		has_skip = False
-	elif preset_model == "MobileUNet-Skip":
+	elif preset_model == "UNet-Skip":
 		has_skip = True
 	else:
-		raise ValueError("Unsupported MobileUNet model '%s'. This function only supports MobileUNet and MobileUNet-Skip" % (preset_model))
+		raise ValueError("Unsupported UNet model '%s'. This function only supports UNet and UNet-Skip" % (preset_model))
 
     ####################
 	# Contracting path #

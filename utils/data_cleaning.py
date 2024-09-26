@@ -52,10 +52,13 @@ for lab_file in lab_files_list[:]:
 ### Commands List ###
 #####################
 
-# Full Dataset
-    # python utils/data_cleaning.py --dirty_dir "StegaStampV1/test_labels" --save_dir "StegaStampV1/test_labels"
-    # python utils/data_cleaning.py --dirty_dir "StegaStampV1/val_labels" --save_dir "StegaStampV1/val_labels"
-    # python utils/data_cleaning.py --dirty_dir "StegaStampV1/train_labels" --save_dir "StegaStampV1/train_labels"
+# python utils/data_cleaning.py --dirty_dir "./synthesized/test/labels" --save_dir "./synthesized/test/labels"
+# python utils/data_cleaning.py --dirty_dir "./synthesized/val/labels" --save_dir "./synthesized/val/labels"
+# python utils/data_cleaning.py --dirty_dir "./synthesized/train/labels" --save_dir "./synthesized/train/labels"
 
-# (1/3) Dataset
+# After doing all those, do these:
+
+# mv synthesized/test/labels synthesized/test_labels
+# mv synthesized/val/labels synthesized/val_labels
+# mv synthesized/train/labels synthesized/train_labels
     

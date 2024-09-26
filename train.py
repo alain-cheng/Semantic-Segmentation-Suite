@@ -7,11 +7,11 @@ import time, datetime
 import argparse
 import random
 import os, sys
+import csv
 # Uncomment when training on ccscloud
-# os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
+#os.environ["CUDA_VISIBLE_DEVICES"]="0,2"
 
 import subprocess
-from utils.gpu_rest import GPURest
 
 # use 'Agg' on matplotlib so that plots could be generated even without Xserver
 # running
@@ -36,12 +36,13 @@ parser.add_argument('--num_epochs', type=int, default=300, help='Number of epoch
 parser.add_argument('--epoch_start_i', type=int, default=0, help='Start counting epochs from this number')
 parser.add_argument('--checkpoint_step', type=int, default=5, help='How often to save checkpoints (epochs)')
 parser.add_argument('--validation_step', type=int, default=1, help='How often to perform validation (epochs)')
+parser.add_argument('--decay_steps', type=float, default=1000, help='How often to decay the learning rate')
 parser.add_argument('--image', type=str, default=None, help='The image you want to predict on. Only valid in "predict" mode.')
 parser.add_argument('--continue_training', type=str2bool, default=False, help='Whether to continue training from a checkpoint')
 parser.add_argument('--dataset', type=str, default="CamVid", help='Dataset you are using.')
 parser.add_argument('--crop_height', type=int, default=512, help='Height of cropped input image to network')
 parser.add_argument('--crop_width', type=int, default=512, help='Width of cropped input image to network')
-parser.add_argument('--batch_size', type=int, default=1, help='Number of images in each batch')
+parser.add_argument('--batch_size', type=int, default=16, help='Number of images in each batch')
 parser.add_argument('--num_val_images', type=int, default=20, help='The number of images to used for validations')
 parser.add_argument('--h_flip', type=str2bool, default=False, help='Whether to randomly flip the image horizontally for data augmentation')
 parser.add_argument('--v_flip', type=str2bool, default=False, help='Whether to randomly flip the image vertically for data augmentation')
@@ -75,12 +76,16 @@ def data_augmentation(input_image, output_image):
 
     return input_image, output_image
 
-# Declare GPU rest object || 300 seconds / 5 min timer
-# gpu_rest = GPURest(300)
-
-# Learning Rate; default is 0.0001
-initial_learning_rate = 0.02
-decay_rate = 0.990
+# default lr 0.0001 | dr 0.995
+#learning_rate = 0.0001
+# TEST
+global_step = tf.Variable(0, trainable=False, name='global_step') #
+init_learning_rate = 0.0001 #
+learning_rate = tf.train.exponential_decay(
+    learning_rate=init_learning_rate, 
+    global_step=global_step, decay_steps=args.decay_steps, # 17500 training images, decay every 5 epochs, with n batches = (17.5k*5)/n
+    decay_rate=0.95, staircase=True, name='learning_rate')
+decay_rate = 0.995
 
 # Get the names of the classes so we can record the evaluation results
 class_names_list, label_values = helpers.get_label_info(os.path.join(args.dataset, "class_dict.csv"))
@@ -104,9 +109,15 @@ net_output = tf.placeholder(tf.float32,shape=[None,None,None,num_classes])
 
 network, init_fn = model_builder.build_model(model_name=args.model, frontend=args.frontend, net_input=net_input, num_classes=num_classes, crop_width=args.crop_width, crop_height=args.crop_height, is_training=True)
 
-loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=network, labels=net_output))
+#loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=network, labels=net_output))
+# Set class weights
+class_weights = tf.constant([2.0, 2.0, 1.0], dtype=tf.float32) # TEST
+loss_per_pixel = tf.nn.softmax_cross_entropy_with_logits_v2(logits=network, labels=net_output) # TEST
+weights = tf.reduce_sum(class_weights*net_output, axis=-1) # TEST
+weighted_loss = loss_per_pixel*weights # TEST
+loss = tf.reduce_mean(weighted_loss) # TEST
 
-opt = tf.train.RMSPropOptimizer(learning_rate=initial_learning_rate, decay=decay_rate).minimize(loss, var_list=[var for var in tf.trainable_variables()])
+opt = tf.train.RMSPropOptimizer(learning_rate=learning_rate, decay=decay_rate).minimize(loss, global_step=global_step, var_list=[var for var in tf.trainable_variables()])
 
 saver=tf.train.Saver(max_to_keep=1000)
 sess.run(tf.global_variables_initializer())
@@ -123,6 +134,15 @@ model_checkpoint_name = args.model + "/" + "checkpoints/latest_model_" + args.mo
 if args.continue_training:
     print('Loaded latest model checkpoint')
     saver.restore(sess, model_checkpoint_name)
+
+# Save loss, scores, and mIoU into a CSV file
+csv_file = args.model + "/" + "saved_metrics" + "/" + "values.csv"
+if not os.path.isdir("%s/%s"%(args.model,"saved_metrics")):
+    os.makedirs("%s/%s"%(args.model,"saved_metrics"))
+if not os.path.exists(csv_file):
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["loss","scores","miou"])
 
 # Load the data
 print("Loading the data ...")
@@ -157,7 +177,7 @@ num_vals = min(args.num_val_images, len(val_input_names))
 
 # Set random seed to make sure models are validated on the same validation images.
 # So you can compare the results of different models more intuitively.
-#random.seed(16)
+random.seed(16)
 val_indices=random.sample(range(0,len(val_input_names)),num_vals)
 
 # Do the training here
@@ -205,11 +225,14 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
             output_image_batch = np.squeeze(np.stack(output_image_batch, axis=1))
 
         # Do the training
-        _,current=sess.run([opt,loss],feed_dict={net_input:input_image_batch,net_output:output_image_batch})
-        current_losses.append(current)
+        #_,current=sess.run([opt,loss],feed_dict={net_input:input_image_batch,net_output:output_image_batch})
+        _,current_loss,current_lr,step=sess.run([opt,loss,learning_rate,global_step],feed_dict={net_input:input_image_batch,net_output:output_image_batch}) # TEST
+        current_losses.append(current_loss)
         cnt = cnt + args.batch_size
+        #current_lr = sess.run(learning_rate) # TEST
         if cnt % 20 == 0:
-            string_print = "Epoch = %d Count = %d Current_Loss = %.4f Time = %.2f"%(epoch,cnt,current,time.time()-st)
+            #string_print = "Epoch = %d Count = %d Current_Loss = %.4f Time = %.2f"%(epoch,cnt,current,time.time()-st)
+            string_print = "Epoch = %d Count = %d Current_Loss = %.4f Time = %.2f Learning Rate = %.8f"%(epoch,cnt,current_loss,time.time()-st,current_lr) # TEST
             utils.LOG(string_print)
             st = time.time()
 
@@ -223,6 +246,7 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     # Save latest checkpoint to same file name
     print("Saving latest checkpoint")
     saver.save(sess,model_checkpoint_name)
+    
 
     if val_indices != 0 and epoch % args.checkpoint_step == 0:
         print("Saving checkpoint for this epoch")
@@ -313,6 +337,9 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     utils.LOG(train_time)
     scores_list = []
 
+    with open(csv_file, mode='a', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow([mean_loss,avg_score,avg_iou])
 
     fig1, ax1 = plt.subplots(figsize=(11, 8))
 

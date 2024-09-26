@@ -7,7 +7,7 @@ from glob import glob
 
 from utils import utils, helpers
 from builders import model_builder
-os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
+#os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--image', type=str, default=None, required=False, help='The image you want to predict on. ')
