@@ -7,11 +7,12 @@ from glob import glob
 
 from utils import utils, helpers
 from builders import model_builder
-#os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
+os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--image', type=str, default=None, required=False, help='The image you want to predict on. ')
-parser.add_argument('--image_dir', type=str, default=None, required=False, help='Image directory we want to predict.')
+parser.add_argument('--image_root_dir', type=str, default='', required=False, help='Root Directory of the image_dir')
+parser.add_argument('--image_dir', type=str, default='', required=False, help='Image directory we want to predict.')
 parser.add_argument('--checkpoint_path', type=str, default=None, required=True, help='The path to the latest checkpoint weights for your model.')
 parser.add_argument('--crop_height', type=int, default=512, help='Height of cropped input image to network')
 parser.add_argument('--crop_width', type=int, default=512, help='Width of cropped input image to network')
@@ -56,10 +57,13 @@ saver.restore(sess, args.checkpoint_path)
 if args.image is not None:
     files_list = [args.image]
 elif args.image_dir is not None:
-    files_list = glob(os.path.join(args.image_dir, '*'))
+    files_list = glob(args.image_root_dir + args.image_dir, recursive=True)
+    print("Detected files:")
+    print(files_list)
 else:
     print('Missing input image')
     sys.exit()    
+
 
 if not os.path.exists(args.save_dir):
     os.makedirs(args.save_dir)
@@ -80,10 +84,19 @@ for file in files_list:
     output_image = helpers.reverse_one_hot(output_image)
     
     out_vis_image = helpers.colour_code_segmentation(output_image, label_values)
+    base_path = args.save_dir + os.path.dirname(file.replace(args.image_root_dir, ''))
     file_name = utils.filepath_to_name(file)
-    cv2.imwrite("%s/%s_pred.png"%(args.save_dir,file_name),cv2.cvtColor(np.uint8(out_vis_image), cv2.COLOR_RGB2BGR))
+
+    img_path = "%s/%s_pred.png"%(base_path,file_name)
+
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+
     
-    print("")
-    print("Wrote image " + "%s/%s_pred.png"%(args.save_dir,file_name))
+
+    if cv2.imwrite(img_path,cv2.cvtColor(np.uint8(out_vis_image), cv2.COLOR_RGB2BGR)):
+        print("Wrote image: " + img_path)
+    else:
+        print("Failed to write image: " + img_path)
     
 print("Finished!")
