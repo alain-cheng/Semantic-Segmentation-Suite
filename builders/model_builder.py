@@ -50,7 +50,7 @@ def build_model(model_name, net_input, num_classes, crop_width, crop_height, fro
     elif model_name == "UNet" or model_name == "UNet-Skip":
         network = build_unet(net_input, preset_model = model_name, num_classes=num_classes)
     elif model_name == "MobileBiSeNet":
-        network = build_mobile_bisenet(net_input, preset_model = model_name, frontend=frontend, num_classes=num_classes, is_training=is_training)
+        network, init_fn = build_mobile_bisenet(net_input, preset_model = model_name, frontend=frontend, num_classes=num_classes, is_training=is_training)
     else:
         raise ValueError("Error: the model %d is not available. Try checking which models are available using the command python main.py --help")
 
