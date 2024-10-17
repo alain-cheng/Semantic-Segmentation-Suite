@@ -15,3 +15,5 @@ notes.txt
 StegaStampV1/
 StegaStampV1_sample/
 Test/
+.ipnyb_checkpoints
+*.ckpt
