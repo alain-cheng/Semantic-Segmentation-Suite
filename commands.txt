@@ -1,0 +1,51 @@
+==================================================================================================================================================
+
+                                                                    TRAINING LOGS
+
+==================================================================================================================================================
+
+BiSeNet
+
+    Begin Curriculum Training, Dataset V2.1
+        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-1"  --epoch_start_i 0 --num_epochs 200
+        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-1"  --epoch_start_i 17 --num_epochs 200
+
+    Next Curriculum V2.2, start at epoch 150, train for around 100 epochs
+        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-2"  --epoch_start_i 150 --num_epochs 250
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+MobileBiSeNet
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+MobileUNet
+
+==================================================================================================================================================
+
+                                                                    FAQS
+
+==================================================================================================================================================
+
+Get GPU Details
+    -- watch -n 0.5 nvidia-smi
+
+Common Issues
+
+    Issue #1: cvt.Color issue popping up during 
+
+        This occurs because of .ipnyb_checkpoints being auto generated when handling the dataset,
+        run these commands:
+
+            -- cd dataset-name
+            -- rm -rf ./train/.ipynb_checkpoints/ ./train_labels/.ipynb_checkpoints/ ./test/.ipynb_checkpoints/ ./test_labels/.ipynb_checkpoints/ ./val/.ipynb_checkpoints/ ./val_labels/.ipynb_checkpoints/
+            
+==================================================================================================================================================
+
+python predict2.py \
+    --image_root_dir "../10_ManualTests/00_Inputs/05_PlainColorBG" \
+    --image_dir "*/*" \
+    --save_dir "_Predictions/10172024_BiSeNet_Checkpoint160" \
+    --checkpoint_path "BiSeNet/checkpoints/0160/model.ckpt" \
+    --model "StegaStamp" \
+    --dataset "synthesized-v2-2"

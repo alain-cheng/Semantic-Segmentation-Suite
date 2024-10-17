@@ -44,7 +44,8 @@ saver.restore(sess, args.checkpoint_path)
 
 # Load the data
 print("Loading the data ...")
-train_input_names,train_output_names, val_input_names, val_output_names, test_input_names, test_output_names = utils.prepare_data(dataset_dir=args.dataset)
+#train_input_names,train_output_names, val_input_names, val_output_names, test_input_names, test_output_names = utils.prepare_data(dataset_dir=args.dataset)
+test_input_names, test_output_names, train_input_names,train_output_names, val_input_names, val_output_names  = utils.prepare_data(dataset_dir=args.dataset) # Test on the train set override
 
 # Create directories if needed
 if not os.path.isdir("%s"%("Test")):

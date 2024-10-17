@@ -12,7 +12,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]="2,3"
 parser = argparse.ArgumentParser()
 parser.add_argument('--image', type=str, default=None, required=False, help='The image you want to predict on. ')
 parser.add_argument('--image_root_dir', type=str, default='', required=False, help='Root Directory of the image_dir')
-parser.add_argument('--image_dir', type=str, default='', required=False, help='Image directory we want to predict.')
+parser.add_argument('--image_dir', type=str, default='*', required=False, help='Image directory we want to predict.')
 parser.add_argument('--checkpoint_path', type=str, default=None, required=True, help='The path to the latest checkpoint weights for your model.')
 parser.add_argument('--crop_height', type=int, default=512, help='Height of cropped input image to network')
 parser.add_argument('--crop_width', type=int, default=512, help='Width of cropped input image to network')
@@ -57,9 +57,11 @@ saver.restore(sess, args.checkpoint_path)
 if args.image is not None:
     files_list = [args.image]
 elif args.image_dir is not None:
-    files_list = glob(args.image_root_dir + args.image_dir, recursive=True)
+    files_list = glob(os.path.join(args.image_root_dir, args.image_dir))
+    print("\n\n**************************")
     print("Detected files:")
     print(files_list)
+    print("**************************\n\n")
 else:
     print('Missing input image')
     sys.exit()    
@@ -84,6 +86,7 @@ for file in files_list:
     output_image = helpers.reverse_one_hot(output_image)
     
     out_vis_image = helpers.colour_code_segmentation(output_image, label_values)
+    
     base_path = args.save_dir + os.path.dirname(file.replace(args.image_root_dir, ''))
     file_name = utils.filepath_to_name(file)
 
