@@ -248,9 +248,9 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
     saver.save(sess,model_checkpoint_name)
     
 
-    if val_indices != 0 and epoch % args.checkpoint_step == 0:
-        print("Saving checkpoint for this epoch")
-        saver.save(sess,"%s/%s/%04d/model.ckpt"%(args.model,"checkpoints",epoch))
+    # if val_indices != 0 and epoch % args.checkpoint_step == 0:
+    #     print("Saving checkpoint for this epoch")
+    #     saver.save(sess,"%s/%s/%04d/model.ckpt"%(args.model,"checkpoints",epoch))
 
 
     if epoch % args.validation_step == 0:
@@ -304,9 +304,9 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
             file_name = os.path.basename(val_input_names[ind])
             file_name = os.path.splitext(file_name)[0]
             
-            cv2.imwrite("%s/%s/%04d/%s_original.png"%(args.model,"checkpoints",epoch,file_name),cv2.cvtColor(np.uint8(input_image), cv2.COLOR_RGB2BGR))
-            cv2.imwrite("%s/%s/%04d/%s_pred.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(out_vis_image), cv2.COLOR_RGB2BGR))
-            cv2.imwrite("%s/%s/%04d/%s_gt.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(gt), cv2.COLOR_RGB2BGR))
+            #cv2.imwrite("%s/%s/%04d/%s_original.png"%(args.model,"checkpoints",epoch,file_name),cv2.cvtColor(np.uint8(input_image), cv2.COLOR_RGB2BGR))
+            #cv2.imwrite("%s/%s/%04d/%s_pred.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(out_vis_image), cv2.COLOR_RGB2BGR))
+            #cv2.imwrite("%s/%s/%04d/%s_gt.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(gt), cv2.COLOR_RGB2BGR))
 
         target.close()
 
