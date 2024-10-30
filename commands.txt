@@ -5,21 +5,28 @@
 ==================================================================================================================================================
 
 BiSeNet
-
-    Begin Curriculum Training, Dataset V2.1
-        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-1"  --epoch_start_i 0 --num_epochs 200
-        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-1"  --epoch_start_i 17 --num_epochs 200
-
-    Next Curriculum V2.2, start at epoch 150, train for around 100 epochs
-        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-2"  --epoch_start_i 150 --num_epochs 250
+    Begin Training, Dataset V2.0.4
+        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-0-4"  --epoch_start_i 0 --num_epochs 50 --batch_size 1
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
 MobileBiSeNet
 
+    Begin Training, Dataset V2.0.4
+
+
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
 MobileUNet
+
+    Begin Training, Dataset V2.0.4
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+UNet
+
+    Begin Training, Dataset V2.0.4
 
 ==================================================================================================================================================
 
@@ -32,7 +39,7 @@ Get GPU Details
 
 Common Issues
 
-    Issue #1: cvt.Color issue popping up during 
+    Issue #1: cvt.Color issue popping up during training
 
         This occurs because of .ipnyb_checkpoints being auto generated when handling the dataset,
         run these commands:
@@ -42,10 +49,44 @@ Common Issues
             
 ==================================================================================================================================================
 
+                                                          Other  Frequent  Commands
+
+==================================================================================================================================================
+
 python predict2.py \
     --image_root_dir "../10_ManualTests/00_Inputs/05_PlainColorBG" \
     --image_dir "*/*" \
-    --save_dir "_Predictions/10172024_BiSeNet_Checkpoint160" \
-    --checkpoint_path "BiSeNet/checkpoints/0160/model.ckpt" \
-    --model "StegaStamp" \
-    --dataset "synthesized-v2-2"
+    --save_dir "_Predictions/10192024_MobileUNet_PlainBG_Latest" \
+    --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" \
+    --model "MobileUNet" \
+    --dataset "synthesized-v2-0-2"
+
+python predict2.py \
+    --image_root_dir "../10_ManualTests/00_Inputs/05_PlainColorBG" \
+    --image_dir "*/*" \
+    --save_dir "_Predictions/10192024_UNet_PlainBG_Latest" \
+    --checkpoint_path "UNet/checkpoints/latest_model.ckpt" \
+    --model "UNet" \
+    --dataset "synthesized-v2-0-2"
+
+python predict2.py \
+    --image_root_dir "../10_ManualTests/00_Inputs/05_PlainColorBG" \
+    --image_dir "*/*" \
+    --save_dir "_Predictions/10242024_BiSeNet_PlainBG_Latest" \
+    --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" \
+    --model "BiSeNet" \
+    --dataset "synthesized-v2-0-3"
+
+python predict2.py \
+    --image_root_dir "../10_ManualTests/00_Inputs/05_PlainColorBG" \
+    --image_dir "*/*" \
+    --save_dir "_Predictions/10242024_MobileBiSeNet_PlainBG_Latest" \
+    --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" \
+    --model "MobileBiSeNet" \
+    --dataset "synthesized-v2-0-3"
+
+
+
+-- cp -r 0010/model.ckpt.data-00000-of-00001 latest_model.ckpt.data-00000-of-00001
+-- cp -r 0010/model.ckpt.index latest_model.ckpt.index
+-- cp -r 0010/model.ckpt.meta latest_model.ckpt.meta

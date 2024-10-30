@@ -176,8 +176,9 @@ num_vals = min(args.num_val_images, len(val_input_names))
 
 # Set random seed to make sure models are validated on the same validation images.
 # So you can compare the results of different models more intuitively.
-random.seed(16)
-val_indices=random.sample(range(0,len(val_input_names)),num_vals)
+#random.seed(16)
+#val_indices=random.sample(range(0,len(val_input_names)),num_vals)
+val_indices=range(0,num_vals)
 
 # Do the training here
 for epoch in range(args.epoch_start_i, args.num_epochs):
@@ -302,6 +303,8 @@ for epoch in range(args.epoch_start_i, args.num_epochs):
 
             file_name = os.path.basename(val_input_names[ind])
             file_name = os.path.splitext(file_name)[0]
+            
+            cv2.imwrite("%s/%s/%04d/%s_original.png"%(args.model,"checkpoints",epoch,file_name),cv2.cvtColor(np.uint8(input_image), cv2.COLOR_RGB2BGR))
             cv2.imwrite("%s/%s/%04d/%s_pred.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(out_vis_image), cv2.COLOR_RGB2BGR))
             cv2.imwrite("%s/%s/%04d/%s_gt.png"%(args.model,"checkpoints",epoch, file_name),cv2.cvtColor(np.uint8(gt), cv2.COLOR_RGB2BGR))
 
