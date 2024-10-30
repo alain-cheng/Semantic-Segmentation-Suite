@@ -9,7 +9,7 @@ import random
 import os, sys
 import csv
 # Uncomment when training on ccscloud
-os.environ["CUDA_VISIBLE_DEVICES"]="1,2,3" # if training refuses try switching between 1, 2, or 3
+os.environ["CUDA_VISIBLE_DEVICES"]="0" # if training refuses try switching between 1, 2, or 3
 
 import subprocess
 
