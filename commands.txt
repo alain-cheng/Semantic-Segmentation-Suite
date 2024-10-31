@@ -7,6 +7,7 @@
 BiSeNet
     Begin Training, Dataset V2.0.4
         -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-0-4"  --epoch_start_i 0 --num_epochs 50 --batch_size 1
+        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-0-4"  --epoch_start_i 13 --num_epochs 50 --batch_size 1 --continue_training True
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -20,7 +21,7 @@ MobileBiSeNet
 MobileUNet
 
     Begin Training, Dataset V2.0.4
-
+        -- python train_v2.py --model "MobileBiSeNet" --dataset "synthesized-v2-0-4"  --epoch_start_i 0 --num_epochs 50 --batch_size 1
 
 -------------------------------------------------------------------------------------------------------------------------------------------------
 

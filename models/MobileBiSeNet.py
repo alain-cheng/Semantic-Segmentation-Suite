@@ -18,23 +18,6 @@ def ConvUpscaleBlock(inputs, n_filters, kernel_size=[3, 3], scale=2):
     net = slim.conv2d_transpose(net, n_filters, kernel_size=[3, 3], stride=[scale, scale], activation_fn=None)
     return net
 
-
-#Not sure if this copy-paste job is gonna do anything
-def DepthwiseSeparableConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1):
-	"""
-	Builds the Depthwise Separable conv block for MobileNets
-	Apply successivly a 2D separable convolution, BatchNormalization relu, conv, BatchNormalization, relu
-	"""
-	# Skip pointwise by setting num_outputs=None
-	net = slim.separable_convolution2d(inputs, num_outputs=None, depth_multiplier=1, kernel_size=[3, 3], activation_fn=None)
-
-	net = slim.batch_norm(net, fused=True)
-	net = tf.nn.relu(net)
-	net = slim.conv2d(net, n_filters, kernel_size=[1, 1], stride=[strides, strides], activation_fn=None)
-	net = slim.batch_norm(net, fused=True)
-	net = tf.nn.relu(net)
-	return net
-
 def ConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1):
     """
     Basic conv block for Encoder-Decoder
@@ -42,6 +25,22 @@ def ConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1):
     """
     net = slim.conv2d(inputs, n_filters, kernel_size, stride=[strides, strides], activation_fn=None, normalizer_fn=None)
     net = tf.nn.relu(slim.batch_norm(net, fused=True))
+    return net
+
+#Not sure if this copy-paste job is gonna do anything
+def DepthwiseSeparableConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1):
+    """
+    Builds the Depthwise Separable conv block for MobileNets
+    Apply successivly a 2D separable convolution, BatchNormalization relu, conv, BatchNormalization, relu
+    """
+    # Skip pointwise by setting num_outputs=None
+    net = slim.separable_convolution2d(inputs, num_outputs=None, depth_multiplier=1, kernel_size=[3, 3], activation_fn=None)
+    
+    net = slim.batch_norm(net, fused=True)
+    net = tf.nn.relu(net)
+    net = slim.conv2d(net, n_filters, kernel_size=[1, 1], stride=[strides, strides], activation_fn=None)
+    net = slim.batch_norm(net, fused=True)
+    net = tf.nn.relu(net)
     return net
 
 def AttentionRefinementModule(inputs, n_filters):
@@ -94,8 +93,9 @@ def build_mobile_bisenet(inputs, num_classes, preset_model='MobileBiSeNet', fron
     ### It was chosen here to be equal to the number of feature maps of a classification
     ### model at each corresponding stage 
     spatial_net = ConvBlock(inputs, n_filters=64, kernel_size=[3, 3], strides=2)
-    spatial_net = DepthwiseSeperableConvBlock(spatial_net, n_filters=128, kernel_size=[3, 3], strides=2)
-    spatial_net = DepthwiseSeperableConvBlock(spatial_net, n_filters=256, kernel_size=[3, 3], strides=2)
+    spatial_net = DepthwiseSeparableConvBlock(spatial_net, n_filters=128, kernel_size=[3, 3], strides=2)
+    spatial_net = DepthwiseSeparableConvBlock(spatial_net, n_filters=256, kernel_size=[3, 3], strides=2)
+    
 
 
     ### Context path
