@@ -18,7 +18,7 @@ Test/
 .ipnyb_checkpoints
 *.ckpt
 synthesized-v2-0-4/
-MobileBiSeNet
-BiSeNet
-UNet
-MobileUNet
+MobileBiSeNet/
+BiSeNet/
+UNet/
+MobileUNet/
