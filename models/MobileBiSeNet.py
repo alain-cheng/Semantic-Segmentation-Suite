@@ -33,9 +33,7 @@ def DepthwiseSeparableConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1
     Builds the Depthwise Separable conv block for MobileNets
     Apply successivly a 2D separable convolution, BatchNormalization relu, conv, BatchNormalization, relu
     """
-    # Skip pointwise by setting num_outputs=None
     net = slim.separable_convolution2d(inputs, num_outputs=None, depth_multiplier=1, kernel_size=[3, 3], activation_fn=None)
-    
     net = slim.batch_norm(net, fused=True)
     net = tf.nn.relu(net)
     net = slim.conv2d(net, n_filters, kernel_size=[1, 1], stride=[strides, strides], activation_fn=None)
@@ -58,7 +56,7 @@ def AttentionRefinementModule(inputs, n_filters):
 
 def FeatureFusionModule(input_1, input_2, n_filters):
     inputs = tf.concat([input_1, input_2], axis=-1)
-    inputs = ConvBlock(inputs, n_filters=n_filters, kernel_size=[3, 3])
+    inputs = DepthwiseSeparableConvBlock(inputs, n_filters=n_filters, kernel_size=[3, 3])
 
     # Global average pooling
     net = tf.reduce_mean(inputs, [1, 2], keep_dims=True)
