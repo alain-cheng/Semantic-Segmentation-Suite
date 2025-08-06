@@ -1,37 +1,294 @@
+Common Issues
+
+    Issue #1: cvt.Color issue popping up during training / testing
+
+        This occurs because of .ipnyb_checkpoints being auto generated when handling the dataset,
+        run these commands:
+
+            -- cd dataset-name
+            -- rm -rf ./train/.ipynb_checkpoints/ ./train_labels/.ipynb_checkpoints/ ./test/.ipynb_checkpoints/ ./test_labels/.ipynb_checkpoints/ ./val/.ipynb_checkpoints/ ./val_labels/.ipynb_checkpoints/
+
 ==================================================================================================================================================
 
-                                                                    TRAINING LOGS
+                                                                    LOGS
 
 ==================================================================================================================================================
 
 BiSeNet
-    Begin Training, Dataset V2.0.4
-        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-0-4"  --epoch_start_i 0 --num_epochs 50 --batch_size 1
-        -- python train_v2.py --model "BiSeNet" --dataset "synthesized-v2-0-4"  --epoch_start_i 13 --num_epochs 50 --batch_size 1 --continue_training True
+    Begin Training
+        -- python train_v2.py --model "BiSeNet" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 10 --batch_size 4
+        -- python train_v2.py --model "BiSeNet" --dataset "synthesized"  --epoch_start_i 8 --num_epochs 10 --batch_size 4 --continue_training True
 
+    Test
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/synthesized" --out "bisenet-test-synthetic"
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/real-life-v2" --out "bisenet-test-real"
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/real-life-v2" --out "bisenet-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/real-life-v2" --out "Tests/bisenet-test-real-x0.50" --brightness 0.50
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/real-life-v2" --out "bisenet-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/real-life-v2" --out "Tests/bisenet-test-real-x2.00" --brightness 2.00
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/real-life-v2" --rescale True --out "Tests/bisenet-test-real-256" --rescale_size 256
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/real-life-v2" --rescale True --out "Tests/bisenet-test-real-128" --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/synthesized" --secrets "datasets/synthesized_test_secrets"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/real-life-v2" --secrets "real-life-v2_test_secrets"
+
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/real-life-v2" --secrets "real-life-v2_test_secrets" --brightness 0.25
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/real-life-v2" --secrets "real-life-v2_test_secrets" --brightness 0.50
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/real-life-v2" --secrets "real-life-v2_test_secrets" --brightness 1.50
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/real-life-v2" --secrets "real-life-v2_test_secrets" --brightness 2.00
+
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/real-life-v2" --secrets "real-life-v2_test_secrets" --size 256
+
+    Revision2B (Test and Detect)
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/revision2b-synthetic/wPerspective" --out "Tests/revision2b/bisenet-test-synthetic-wperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/wPerspective" --secrets "datasets/revision2b-synthetic/wPerspective-secrets" --out "Tests/revision2b/bisenet-test-synthetic-wperspective-secrets"
+
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/revision2b-synthetic/noPerspective" --out "Tests/revision2b/bisenet-test-synthetic-noperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/noPerspective" --secrets "datasets/revision2b-synthetic/noPerspective-secrets" --out "Tests/revision2b/bisenet-test-synthetic-noperspective-secrets"
+
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/revision2b-synthetic/Square" --out "Tests/revision2b/bisenet-test-synthetic-square"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/Square" --secrets "datasets/revision2b-synthetic/Square-secrets" --out "Tests/revision2b/bisenet-test-synthetic-square-secrets"
+
+    Revision2C
+        -- python test.py --checkpoint_path "BiSeNet/checkpoints/latest_model.ckpt" --model "BiSeNet" --dataset "datasets/synthesized-2c" --out "Tests/revision2c/bisenet-test-synthetic-2c"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/synthesized-2c" --secrets "datasets/2c_test_secrets" --out "Tests/revision2c/bisenet-test-synthetic-2c-secrets"
+-------------------------------------------------------------------------------------------------------------------------------------------------
+BiSeNet-MobileNetV2
+
+    Train
+        -- python train_v2.py --model "BiSeNet-MobileNetV2" --frontend "MobileNetV2" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 10 --batch_size 4
+        -- python train_v2.py --model "BiSeNet-MobileNetV2" --frontend "MobileNetV2" --dataset "synthesized"  --epoch_start_i 10 --num_epochs 15 --batch_size 4 --continue_training True
+
+    Test
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "synthesized" --out "bisenetmobilenetv2-test-synthetic"
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "real-life-v2" --out "bisenetmobilenetv2-test-real"
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "real-life-v2" --out "bisenetmobilenetv2-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "real-life-v2" --brightness 0.50
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "real-life-v2" --out "bisenetmobilenetv2-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "real-life-v2" --brightness 2.00
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "real-life-v2" --rescale True --rescale_size 256
+        -- python test.py --checkpoint_path "BiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "BiSeNet-MobileNetV2" --dataset "real-life-v2" --rescale True --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "detector_models/trained_bisenet_mobilenetv2" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "synthesized" --secrets "synthesized_test_secrets"
+        -- python detector.py --detector_model "detector_models/trained_bisenet_mobilenetv2" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets"
+
+        -- python detector.py --detector_model "detector_models/trained_bisenet_mobilenetv2" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets" --brightness 0.25
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+BiSeNet-ResNet50
+
+    Train
+        -- python train_v2.py --model "BiSeNet-ResNet50" --frontend "ResNet50" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 10 --batch_size 4
+        -- python train_v2.py --model "BiSeNet-ResNet50" --frontend "ResNet50" --dataset "synthesized"  --epoch_start_i 10 --num_epochs 15 --batch_size 4 --continue_training True
+
+    Test
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "synthesized" --out "bisenetresnet50-test-synthetic"
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "real-life-v2" --out "bisenetresnet50-test-real"
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "real-life-v2" --out "bisenetresnet50-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "real-life-v2" --out "bisenetresnet50-test-real-x0.50" --brightness 0.50
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "real-life-v2" --out "bisenetresnet50-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "real-life-v2" --out "bisenetresnet50-test-real-x2.00" --brightness 2.00
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "real-life-v2" --rescale True --rescale_size 256
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "real-life-v2" --rescale True --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "synthesized" --secrets "synthesized_test_secrets"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets"
+
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets" --brightness 0.50
+
+
+    Revision2B (Test and Detect)
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "datasets/revision2b-synthetic/wPerspective" --out "Tests/revision2b/bisenet-resnet50-test-synthetic-wperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/wPerspective" --secrets "datasets/revision2b-synthetic/wPerspective-secrets" --out "Tests/revision2b/bisenet-resnet50-test-synthetic-wperspective-secrets"
+
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "datasets/revision2b-synthetic/noPerspective" --out "Tests/revision2b/bisenet-resnet50-test-synthetic-noperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/noPerspective" --secrets "datasets/revision2b-synthetic/noPerspective-secrets" --out "Tests/revision2b/bisenet-resnet50-test-synthetic-noperspective-secrets"
+
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "datasets/revision2b-synthetic/Square" --out "Tests/revision2b/bisenet-resnet50-test-synthetic-square"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/Square" --secrets "datasets/revision2b-synthetic/Square-secrets" --out "Tests/revision2b/bisenet-resnet50-test-synthetic-square-secrets"
+
+    Revision2C
+        -- python test.py --checkpoint_path "BiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "BiSeNet-ResNet50" --dataset "datasets/synthesized-2c" --out "Tests/revision2c/bisenet-resnet50-test-synthetic-2c"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_bisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/synthesized-2c" --secrets "datasets/2c_test_secrets" --out "Tests/revision2c/bisenet-resnet50-test-synthetic-2c-secrets"
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
 MobileBiSeNet
 
-    Begin Training, Dataset V2.0.4
+    Begin Training
+        -- python train_v2.py --model "MobileBiSeNet" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 10 --batch_size 4
+        -- python train_v2.py --model "MobileBiSeNet" --dataset "synthesized"  --epoch_start_i 10 --num_epochs 15 --batch_size 4 --continue_training True
+
+    Test
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "synthesized" --out "mobilebisenet-test-synthetic"
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "real-life-v2" --out "mobilebisenet-test-real"
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "real-life-v2" --out "mobilebisenet-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "real-life-v2" --dataset "real-life-v2" --out "mobilebisenet-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "real-life-v2" --out "mobilebisenet-test-real-x2.00" --brightness 2.00
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "real-life-v2" --out "mobilebisenet-test-real-x0.50" --brightness 0.50
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "real-life-v2" --rescale True --out "mobilebisenet-test-real-256" --rescale_size 256
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "real-life-v2" --rescale True --out "mobilebisenet-test-real-128" --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "synthesized" --secrets "synthesized_test_secrets"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets"
 
 
+    Revision2B (Test and Detect)
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "datasets/revision2b-synthetic/wPerspective" --out "Tests/revision2b/mobilebisenet-test-synthetic-wperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/wPerspective" --secrets "datasets/revision2b-synthetic/wPerspective-secrets" --out "Tests/revision2b/mobilebisenet-test-synthetic-wperspective-secrets"
+
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "datasets/revision2b-synthetic/noPerspective" --out "Tests/revision2b/mobilebisenet-test-synthetic-noperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/noPerspective" --secrets "datasets/revision2b-synthetic/noPerspective-secrets" --out "Tests/revision2b/mobilebisenet-test-synthetic-noperspective-secrets"
+
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "datasets/revision2b-synthetic/Square" --out "Tests/revision2b/mobilebisenet-test-synthetic-square"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/Square" --secrets "datasets/revision2b-synthetic/Square-secrets" --out "Tests/revision2b/mobilebisenet-test-synthetic-square-secrets"
+
+    Revision2C
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "datasets/synthesized-2c" --out "Tests/revision2c/mobilebisenet-test-synthetic-2c"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/synthesized-2c" --secrets "datasets/2c_test_secrets" --out "Tests/revision2c/mobilebisenet-test-synthetic-2c-secrets"
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+MobileBiSeNet-MobileNetV2
+
+    Train
+        -- python train_v2.py --model "MobileBiSeNet-MobileNetV2" --frontend "MobileNetV2" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 5 --batch_size 4
+        -- python train_v2.py --model "MobileBiSeNet-MobileNetV2" --frontend "MobileNetV2" --dataset "synthesized"  --epoch_start_i 5 --num_epochs 10 --batch_size 4 --continue_training True
+        -- python train_v2.py --model "MobileBiSeNet-MobileNetV2" --frontend "MobileNetV2" --dataset "synthesized"  --epoch_start_i 10 --num_epochs 15 --batch_size 4 --continue_training True
+        -- python train_v2.py --model "MobileBiSeNet-MobileNetV2" --frontend "MobileNetV2" --dataset "synthesized"  --epoch_start_i 15 --num_epochs 20 --batch_size 4 --continue_training True
+
+    Test
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "synthesized" --out "mobilebisenetmobilenetv2-test-synthetic"
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "real-life-v2" --out "mobilebisenetmobilenetv2-test-real"
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "real-life-v2" --out "mobilebisenetmobilenetv2-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "real-life-v2" --brightness 0.50
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "real-life-v2" --dataset "real-life-v2" --out "mobilebisenetmobilenetv2-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "real-life-v2" --brightness 2.00
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "real-life-v2" --rescale True --rescale_size 256
+        -- python test.py --checkpoint_path "MobileBiSeNet-MobileNetV2/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-MobileNetV2" --dataset "real-life-v2" --rescale True --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "detector_models/trained_mobilebisenet_mobilenetv2" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "synthesized" --secrets "synthesized_test_secrets"
+        -- python detector.py --detector_model "detector_models/trained_mobilebisenet_mobilenetv2" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets"
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+MobileBiSeNet-ResNet50
+
+    Train
+        -- python train_v2.py --model "MobileBiSeNet-ResNet50" --frontend "ResNet50" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 10 --batch_size 4
+
+    Test
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "synthesized" --out "mobilebisenetresnet50-test-synthetic"
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "real-life-v2" --out "mobilebisenetresnet50-test-real"
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "real-life-v2" --out "mobilebisenetresnet50-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "real-life-v2" --out "mobilebisenetresnet50-test-real-x0.50" --brightness 0.50
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "real-life-v2" --out "mobilebisenetresnet50-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "real-life-v2" --out "mobilebisenetresnet50-test-real-x2.00" --brightness 2.00
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "real-life-v2" --out "Tests/mobilebisenetresnet50-test-real-256" --rescale True --rescale_size 256
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "real-life-v2" --out "Tests/mobilebisenetresnet50-test-real-128" --rescale True --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "synthesized" --secrets "synthesized_test_secrets"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets"
+
+
+    Revision2B (Test and Detect)
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "datasets/revision2b-synthetic/wPerspective" --out "Tests/revision2b/mobilebisenet-resnet50-test-synthetic-wperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/wPerspective" --secrets "datasets/revision2b-synthetic/wPerspective-secrets" --out "Tests/revision2b/mobilebisenet-resnet50-test-synthetic-wperspective-secrets"
+
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "datasets/revision2b-synthetic/noPerspective" --out "Tests/revision2b/mobilebisenet-resnet50-test-synthetic-noperspective"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/noPerspective" --secrets "datasets/revision2b-synthetic/noPerspective-secrets" --out "Tests/revision2b/mobilebisenet-resnet50-test-synthetic-noperspective-secrets"
+
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "datasets/revision2b-synthetic/Square" --out "Tests/revision2b/mobilebisenet-resnet50-test-synthetic-square"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/Square" --secrets "datasets/revision2b-synthetic/Square-secrets" --out "Tests/revision2b/mobilebisenet-resnet50-test-synthetic-square-secrets"
+
+    Revision2C
+        -- python test.py --checkpoint_path "MobileBiSeNet-ResNet50/checkpoints/latest_model.ckpt" --model "MobileBiSeNet-ResNet50" --dataset "datasets/synthesized-2c" --out "Tests/revision2c/mobilebisenet-resnet50-test-synthetic-2c"
+        -- python detector.py --detector_model "../StegaStamp/detector_models/trained_mobilebisenet_resnet50" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/synthesized-2c" --secrets "datasets/2c_test_secrets" --out "Tests/revision2c/mobilebisenet-resnet50-test-synthetic-2c-secrets"
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
 MobileUNet
 
-    Begin Training, Dataset V2.0.4
-        -- python train_v2.py --model "MobileBiSeNet" --dataset "synthesized-v2-0-4"  --epoch_start_i 0 --num_epochs 50 --batch_size 1
+    Begin Training
+        -- python train_v2.py --model "MobileUNet" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 10 --batch_size 1
+        -- python train_v2.py --model "MobileUNet" --dataset "synthesized"  --epoch_start_i 7 --num_epochs 10 --batch_size 1 --continue_training True
 
+    Test
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "synthesized" --out "mobileunet-test-synthetic"
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "real-life-v2" --out "mobileunet-test-real"
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "real-life-v2" --out "mobileunet-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "real-life-v2" --out "Tests/mobileunet-test-real-x0.50" --brightness 0.50
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "real-life-v2" --out "mobileunet-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "real-life-v2" --out "Tests/mobileunet-test-real-x2.00" --brightness 2.00
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "real-life-v2" --out "Tests/mobileunet-test-real-256" --rescale True --rescale_size 256
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "real-life-v2" --out "Tests/mobileunet-test-real-128" --rescale True --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "detector_models/trained_mobileunet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "synthesized" --secrets "synthesized_test_secrets"
+        -- python detector.py --detector_model "detector_models/trained_mobileunet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets"
+
+
+    Revision2B (Test and Detect)
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "datasets/revision2b-synthetic/wPerspective" --out "Tests/revision2b/mobileunet-synthetic-wperspective"
+        -- python detector.py --detector_model "detector_models/trained_mobileunet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/wPerspective" --secrets "datasets/revision2b-synthetic/wPerspective-secrets" --out "Tests/revision2b/mobileunet-synthetic-wperspective-secrets"
+
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "datasets/revision2b-synthetic/noPerspective" --out "Tests/revision2b/mobileunet-synthetic-noperspective"
+        -- python detector.py --detector_model "detector_models/trained_mobileunet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/noPerspective" --secrets "datasets/revision2b-synthetic/noPerspective-secrets" --out "Tests/revision2b/mobileunet-synthetic-noperspective-secrets"
+
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "datasets/revision2b-synthetic/Square" --out "Tests/revision2b/mobileunet-synthetic-square"
+        -- python detector.py --detector_model "detector_models/trained_mobileunet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/Square" --secrets "datasets/revision2b-synthetic/Square-secrets" --out "Tests/revision2b/mobileunet-synthetic-square-secrets"
+
+    Revision2C
+        -- python test.py --checkpoint_path "MobileUNet/checkpoints/latest_model.ckpt" --model "MobileUNet" --dataset "datasets/synthesized-2c" --out "Tests/revision2c/mobileunet-test-synthetic-2c"
+        -- python detector.py --detector_model "detector_models/trained_mobileunet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/synthesized-2c" --secrets "datasets/2c_test_secrets" --out "Tests/revision2c/mobileunet-test-synthetic-2c-secrets"
 -------------------------------------------------------------------------------------------------------------------------------------------------
 
 UNet
 
-    Begin Training, Dataset V2.0.4
+    Begin Training
+        -- python train_v2.py --model "UNet" --dataset "synthesized"  --epoch_start_i 0 --num_epochs 10 --batch_size 1
+        -- python train_v2.py --model "UNet" --dataset "synthesized"  --epoch_start_i 9 --num_epochs 10 --batch_size 1 --continue_training True
+
+    Test
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "synthesized" --out "unet-test-synthetic"
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "real-life-v2" --out "unet-test-real"
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "real-life-v2" --out "unet-test-real-x0.25" --brightness 0.25
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "real-life-v2" --out "Tests/unet-test-real-x0.50" --brightness 0.50
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "real-life-v2" --out "unet-test-real-x1.50" --brightness 1.50
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "real-life-v2" --out "Tests/unet-test-real-x2.00" --brightness 2.00
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "real-life-v2" --out "Tests/unet-test-real-256" --rescale True --rescale_size 256
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "real-life-v2" --out "Tests/unet-test-real-128" --rescale True --rescale_size 128
+
+    Detect
+        -- python detector.py --detector_model "detector_models/trained_unet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "synthesized" --secrets "synthesized_test_secrets"
+        -- python detector.py --detector_model "detector_models/trained_unet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "real-life-v2" --secrets "real-life-v2_test_secrets"
+
+
+    Revision2B (Test and Detect)
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "datasets/revision2b-synthetic/wPerspective" --out "Tests/revision2b/unet-synthetic-wperspective"
+        -- python detector.py --detector_model "detector_models/trained_unet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/wPerspective" --secrets "datasets/revision2b-synthetic/wPerspective-secrets" --out "Tests/revision2b/unet-synthetic-wperspective-secrets"
+
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "datasets/revision2b-synthetic/noPerspective" --out "Tests/revision2b/unet-synthetic-noperspective"
+        -- python detector.py --detector_model "detector_models/trained_unet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/noPerspective" --secrets "datasets/revision2b-synthetic/noPerspective-secrets" --out "Tests/revision2b/unet-synthetic-noperspective-secrets"
+
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "datasets/revision2b-synthetic/Square" --out "Tests/revision2b/unet-synthetic-square"
+        -- python detector.py --detector_model "detector_models/trained_unet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/revision2b-synthetic/Square" --secrets "datasets/revision2b-synthetic/Square-secrets" --out "Tests/revision2b/unet-synthetic-square-secrets"
+
+    Revision2C
+        -- python test.py --checkpoint_path "UNet/checkpoints/latest_model.ckpt" --model "UNet" --dataset "datasets/synthesized-2c" --out "Tests/revision2c/unet-test-synthetic-2c"
+        -- python detector.py --detector_model "detector_models/trained_unet" --decoder_model "../StegaStamp/saved_models/stegastamp_pretrained" --dataset "datasets/synthesized-2c" --secrets "datasets/2c_test_secrets" --out "Tests/revision2c/unet-test-synthetic-2c-secrets"
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+Debugging
+
+    Test
+        -- python test.py --checkpoint_path "MobileBiSeNet/checkpoints/latest_model.ckpt" --model "MobileBiSeNet" --dataset "debug-set"
 
 ==================================================================================================================================================
 
-                                                                    FAQS
+                                                                    FAQs and Stuff
 
 ==================================================================================================================================================
 
@@ -40,7 +297,7 @@ Get GPU Details
 
 Common Issues
 
-    Issue #1: cvt.Color issue popping up during training
+    Issue #1: cvt.Color issue popping up during training / testing
 
         This occurs because of .ipnyb_checkpoints being auto generated when handling the dataset,
         run these commands:

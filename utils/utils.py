@@ -224,7 +224,7 @@ def compute_class_accuracies(pred, label, num_classes):
     for val in range(num_classes):
         total.append((label == val).sum())
 
-    count = [0.0] * num_classes
+    count = [0.0] * num_classes # creates this list = [0.0, 0.0]
     for i in range(len(label)):
         if pred[i] == label[i]:
             count[int(pred[i])] = count[int(pred[i])] + 1.0
@@ -245,6 +245,7 @@ def compute_class_accuracies(pred, label, num_classes):
 def compute_mean_iou(pred, label):
 
     unique_labels = np.unique(label)
+    #print("\nUnique Labels:\n", unique_labels)
     num_unique_labels = len(unique_labels);
 
     I = np.zeros(num_unique_labels)
@@ -253,10 +254,11 @@ def compute_mean_iou(pred, label):
     for index, val in enumerate(unique_labels):
         pred_i = pred == val
         label_i = label == val
+        #print("\nPred_i:\n", pred_i)
 
         I[index] = float(np.sum(np.logical_and(label_i, pred_i)))
         U[index] = float(np.sum(np.logical_or(label_i, pred_i)))
-
+        #print("\nI, U: ", I, U)
 
     mean_iou = np.mean(I / U)
     return mean_iou

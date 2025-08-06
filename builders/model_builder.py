@@ -4,11 +4,15 @@ import subprocess
 
 sys.path.append("models")
 from models.BiSeNet import build_bisenet
+from models.BiSeNet_MobileNetV2 import build_bisenet_mobilenetv2
+from models.BiSeNet_ResNet50 import build_bisenet_resnet50
 from models.MobileUNet import build_mobile_unet
 from models.UNet import build_unet
 from models.MobileBiSeNet import build_mobile_bisenet
+from models.MobileBiSeNet_MobileNetV2 import build_mobile_bisenet_mobilenetv2
+from models.MobileBiSeNet_ResNet50 import build_mobile_bisenet_resnet50
 
-SUPPORTED_MODELS = ["BiSeNet", "MobileUNet", "UNet", "MobileBiSeNet"]
+SUPPORTED_MODELS = ["BiSeNet", "BiSeNet-MobileNetV2", "BiSeNet-ResNet50", "MobileUNet", "UNet", "MobileBiSeNet", "MobileBiSeNet-MobileNetV2", "MobileBiSeNet-ResNet50"]
 
 SUPPORTED_FRONTENDS = ["ResNet50", "ResNet101", "ResNet152", "MobileNetV2", "InceptionV4"]
 
@@ -35,7 +39,7 @@ def build_model(model_name, net_input, num_classes, crop_width, crop_height, fro
         download_checkpoints("ResNet101")
     if "ResNet152" == frontend and not os.path.isfile("models/resnet_v2_152.ckpt"):
         download_checkpoints("ResNet152")
-    if "MobileNetV2" == frontend and not os.path.isfile("models/mobilenet_v2.ckpt.data-00000-of-00001"):
+    if "MobileNetV2" == frontend and not os.path.isfile("models/mobilenet_v2_1.4_224.ckpt.data-00000-of-00001"):
         download_checkpoints("MobileNetV2")
     if "InceptionV4" == frontend and not os.path.isfile("models/inception_v4.ckpt"):
         download_checkpoints("InceptionV4") 
@@ -45,12 +49,20 @@ def build_model(model_name, net_input, num_classes, crop_width, crop_height, fro
     if model_name == "BiSeNet":
         # BiSeNet requires pre-trained ResNet weights
         network, init_fn = build_bisenet(net_input, preset_model = model_name, frontend=frontend, num_classes=num_classes, is_training=is_training)
+    elif model_name == "BiSeNet-MobileNetV2":
+        network, init_fn = build_bisenet_mobilenetv2(net_input, preset_model = model_name, frontend="MobileNetV2", num_classes=num_classes, is_training=is_training)
+    elif model_name == "BiSeNet-ResNet50":
+        network, init_fn = build_bisenet(net_input, preset_model = model_name, frontend="ResNet50", num_classes=num_classes, is_training=is_training)
     elif model_name == "MobileUNet" or model_name == "MobileUNet-Skip":
         network = build_mobile_unet(net_input, preset_model = model_name, num_classes=num_classes)
     elif model_name == "UNet" or model_name == "UNet-Skip":
         network = build_unet(net_input, preset_model = model_name, num_classes=num_classes)
     elif model_name == "MobileBiSeNet":
         network, init_fn = build_mobile_bisenet(net_input, preset_model = model_name, frontend=frontend, num_classes=num_classes, is_training=is_training)
+    elif model_name == "MobileBiSeNet-MobileNetV2":
+        network, init_fn = build_mobile_bisenet_mobilenetv2(net_input, preset_model = model_name, frontend="MobileNetV2", num_classes=num_classes, is_training=is_training)
+    elif model_name == "MobileBiSeNet-ResNet50":
+        network, init_fn = build_mobile_bisenet_resnet50(net_input, preset_model = model_name, frontend="ResNet50", num_classes=num_classes, is_training=is_training)
     else:
         raise ValueError("Error: the model %d is not available. Try checking which models are available using the command python main.py --help")
 

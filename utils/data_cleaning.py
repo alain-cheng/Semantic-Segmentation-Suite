@@ -20,8 +20,8 @@ def snap_colors(im, targets, thresh):
 
 target = {
     #BGR Format
-    (255, 255, 255): 'StegaStamp',
-    (0, 0, 0): 'Unlabelled'
+    (255, 255, 255): 'Embedded',
+    (0, 0, 0): 'Background'
 }
 
 parser = argparse.ArgumentParser()
@@ -52,19 +52,10 @@ for lab_file in lab_files_list[:]:
 ### Commands List ###
 #####################
 
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-1/test_labels" --save_dir "./synthesized-v2-1/test_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-1/val_labels" --save_dir "./synthesized-v2-1/val_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-1/train_labels" --save_dir "./synthesized-v2-1/train_labels"
+# python utils/data_cleaning.py --dirty_dir "./synthesized/test_labels" --save_dir "./synthesized/test_labels"
+# python utils/data_cleaning.py --dirty_dir "./synthesized/val_labels" --save_dir "./synthesized/val_labels"
+# python utils/data_cleaning.py --dirty_dir "./synthesized/train_labels" --save_dir "./synthesized/train_labels"
 
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-2/test_labels" --save_dir "./synthesized-v2-2/test_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-2/val_labels" --save_dir "./synthesized-v2-2/val_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-2/train_labels" --save_dir "./synthesized-v2-2/train_labels"
 
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-3/test_labels" --save_dir "./synthesized-v2-3/test_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-3/val_labels" --save_dir "./synthesized-v2-3/val_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-3/train_labels" --save_dir "./synthesized-v2-3/train_labels"
-
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-4/test_labels" --save_dir "./synthesized-v2-4/test_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-4/val_labels" --save_dir "./synthesized-v2-4/val_labels"
-# python utils/data_cleaning.py --dirty_dir "./synthesized-v2-4/train_labels" --save_dir "./synthesized-v2-4/train_labels"
-    
+# python utils/data_cleaning.py --dirty_dir "./synthesized-noPerspective/test_labels" --save_dir "./synthesized-noPerspective/test_labels"
+# python utils/data_cleaning.py --dirty_dir "./synthesized-square/test_labels" --save_dir "./synthesized-noPerspective/test_labels"

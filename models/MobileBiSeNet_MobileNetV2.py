@@ -27,6 +27,7 @@ def ConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1):
     net = tf.nn.relu(slim.batch_norm(net, fused=True))
     return net
 
+#Not sure if this copy-paste job is gonna do anything
 def DepthwiseSeparableConvBlock(inputs, n_filters, kernel_size=[3, 3], strides=1):
     """
     Builds the Depthwise Separable conv block for MobileNets
@@ -72,7 +73,7 @@ def FeatureFusionModule(input_1, input_2, n_filters):
     return net  
 
 
-def build_mobile_bisenet(inputs, num_classes, preset_model='MobileBiSeNet', frontend="ResNet101", weight_decay=1e-5, is_training=True, pretrained_dir="models"):
+def build_mobile_bisenet_mobilenetv2(inputs, num_classes, preset_model='MobileBiSeNet', frontend="MobileNetV2", weight_decay=1e-5, is_training=True, pretrained_dir="models"):
     """
     Builds the MobileBiSeNet model. 
 
@@ -92,15 +93,15 @@ def build_mobile_bisenet(inputs, num_classes, preset_model='MobileBiSeNet', fron
     spatial_net = ConvBlock(inputs, n_filters=64, kernel_size=[3, 3], strides=2)
     spatial_net = DepthwiseSeparableConvBlock(spatial_net, n_filters=128, kernel_size=[3, 3], strides=2)
     spatial_net = DepthwiseSeparableConvBlock(spatial_net, n_filters=256, kernel_size=[3, 3], strides=2)
-    
-
 
     ### Context path
     logits, end_points, frontend_scope, init_fn  = frontend_builder.build_frontend(inputs, frontend, pretrained_dir=pretrained_dir, is_training=is_training)
 
-    net_4 = AttentionRefinementModule(end_points['pool4'], n_filters=512)
+    # adjusted n_filters from 512 to 64, the tensor end_points['pool4'] from mobilenetv2 only has 64 channels 
+    net_4 = AttentionRefinementModule(end_points['pool4'], n_filters=64) 
 
-    net_5 = AttentionRefinementModule(end_points['pool5'], n_filters=2048)
+    # adjusted n_filters from 2048 to 160, the tensor end_points['pool5'] from mobilenetv2 only has 160 channels 
+    net_5 = AttentionRefinementModule(end_points['pool5'], n_filters=160)
 
     global_channels = tf.reduce_mean(net_5, [1, 2], keep_dims=True)
     net_5_scaled = tf.multiply(global_channels, net_5)
